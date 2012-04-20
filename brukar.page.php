@@ -1,7 +1,6 @@
 <?php
 
 function brukar_admin() {
-
   $form['brukar_url'] = array(
     '#type' => 'textfield',
     '#title' => 'Adresse',
@@ -69,44 +68,44 @@ function brukar_oauth_callback() {
 }
 
 function brukar_login($data) {
-	global $user;
-	
-	if ($user->uid != 0) {
-		user_save($user, array(
-		  'ident' => $data['id'],
-		  'name' => $data['name'],
-		  'mail' => $data['mail'],
-		  'homepage' => $data['homepage'],
-		));
-    user_set_authmaps($user, array('authname_brukar' => $data['id']));
-		drupal_goto('user');
-	}
+  global $user;
 
-	$user = db_query('SELECT uid FROM {authmap} WHERE authname = :ident', array(':ident' => $data['id']))->fetch();
-	if ($user === false) {
-	  $edit = array(
-	    'ident' => $data['id'],
-	    'name' => $data['name'],
-	    'mail' => $data['mail'],
-	    'phone' => $data['phone'],
-	    'organization' => $data['organization'],
-	    'homepage' => $data['homepage'],
-	    'status' => 1,
-	  );
-	  $user = user_save(null, $edit);
+  if ($user->uid != 0) {
+    user_save($user, array(
+      'ident' => $data['id'],
+      'name' => $data['name'],
+      'mail' => $data['mail'],
+      'homepage' => $data['homepage'],
+    ));
+    user_set_authmaps($user, array('authname_brukar' => $data['id']));
+      drupal_goto('user');
+  }
+
+  $user = db_query('SELECT uid FROM {authmap} WHERE authname = :ident', array(':ident' => $data['id']))->fetch();
+  if ($user === false) {
+    $edit = array(
+      'ident' => $data['id'],
+      'name' => $data['name'],
+      'mail' => $data['mail'],
+      'phone' => $data['phone'],
+      'organization' => $data['organization'],
+      'homepage' => $data['homepage'],
+      'status' => 1,
+    );
+    $user = user_save(null, $edit);
 
     user_set_authmaps($user, array('authname_brukar' => $data['id']));
-	} else {
-	  $account = user_load($user->uid);
-	  $edit = array(
-	    'name' => $data['name'],
-	    'mail' => $data['mail'],
-	    'phone' => isset($data['phone']) ? $data['phone'] : null,
-	    'organization' => $data['organization'],
-	    'homepage' => $data['homepage'],
-	  );
-	  $user = user_save($account, $edit);
-	}
+  } else {
+    $account = user_load($user->uid);
+    $edit = array(
+      'name' => $data['name'],
+      'mail' => $data['mail'],
+      'phone' => isset($data['phone']) ? $data['phone'] : null,
+      'organization' => $data['organization'],
+      'homepage' => $data['homepage'],
+    );
+    $user = user_save($account, $edit);
+  }
 
   $form_state['uid'] = $user->uid;
   user_login_submit(array(), $form_state);
