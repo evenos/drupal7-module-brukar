@@ -1,0 +1,128 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function brukar_menu() {
+  return array(
+    'admin/config/people/brukar' => array(
+      'title' => 'Brukar',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('brukar_admin'),
+      'access arguments' => array('auth admin'),
+      'type' => MENU_NORMAL_ITEM,
+      'file' => 'brukar.page.php',
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function brukar_menu_alter(&$items) {
+  $items['user']['page callback'] = 'brukar_user_page';
+  $items['user']['access callback'] = 'brukar_user_page_access';
+  
+  unset($items['user/register']);
+  unset($items['user/password']);
+  unset($items['user/reset/%/%/%']);
+}
+
+/**
+ * Implements hook_init().
+ */
+function brukar_init() {
+  global $user;
+
+  if ($user->uid === 0 && $_GET['q'] != 'user' && variable_get('brukar_forced', '0') != 0)
+    brukar_user_page();
+
+  if ($user->uid === 0 && isset($_GET[variable_get('brukar_keyword', 'brukar')])) {
+    unset($_GET[variable_get('brukar_keyword', 'brukar')]);
+    brukar_user_page();
+  }
+
+  if (isset($_GET['oauth_token']))
+    brukar_user_page();
+}
+
+/**
+ * Reimplements user_page().
+ */
+function brukar_user_page($force = FALSE) {
+  global $user;
+  if (isset($_GET['oauth_token']) || $force || ($user->uid === 0 && variable_get('brukar_url', '') != '')) {
+    global $user;
+    require_once(drupal_get_path('module', 'brukar') . '/brukar.page.php');
+    require_once(drupal_get_path('module', 'brukar') . '/OAuth.php');
+    if (isset($_GET['oauth_token'])) {
+      return brukar_oauth_callback();
+    } elseif ($user->uid == 0 || $force) {
+      return brukar_oauth_request();
+    }
+  }
+
+  return user_page();
+}
+
+function brukar_user_page_access() {
+  return ($GLOBALS['user']->uid || isset($_GET['oauth_token']));
+}
+
+/**
+ * Implements hook_user_view_alter().
+ */
+function brukar_user_view_alter(&$build) {
+	global $user;
+
+	if (isset($build['summary']['member_for']))
+		unset($build['summary']['member_for']);
+
+  
+
+	if (db_query("SELECT COUNT(*) AS `count` FROM {authmap} WHERE `module` = 'brukar' AND `uid` = :uid", array(':uid' => $user->uid))->fetch()->count == 0) {
+    $build['summary']['brukar'] = array(
+      '#type' => 'user_profile_item',
+      '#title' => 'Logg inn med brukar',
+      '#markup' => drupal_render(drupal_get_form('brukar_form_login')),
+    );
+	}
+}
+
+function brukar_form_login($form, &$form_state) {
+	$form['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => 'Logg inn',
+	);
+	
+	return $form;
+}
+
+function brukar_form_login_submit($form, &$form_state) {
+	brukar_user_page(TRUE);
+}
+
+/**
+ * Implements hook_user_presave().
+ */
+function brukar_user_presave(&$edit, $account, $category) {
+  $edit['data']['phone'] = isset($edit['phone']) ? $edit['phone'] : NULL;
+  $edit['data']['organization'] = isset($edit['organization']) ? $edit['organization'] : NULL;
+  $edit['data']['homepage'] = isset($edit['homepage']) ? $edit['homepage'] : NULL;
+  
+  if (isset($edit['data']['ident']))
+    unset($edit['data']['ident']);
+}
+
+/**
+ * Implements hook_user_load().
+ */
+function brukar_user_load($users) {
+	foreach ($users as $uid => $user) {
+    $user->phone = $user->data['phone'];
+    $user->organization = $user->data['organization'];
+    $user->homepage = $user->data['homepage'];
+			
+    $users[$uid] = $user;
+	}
+}
