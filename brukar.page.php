@@ -1,29 +1,50 @@
 <?php
 
 function brukar_admin() {
-  $form['brukar_url'] = array(
+	$form['server'] = array(
+	  '#type' => 'fieldset',
+	  '#title' => 'Server',
+	  '#collapsible' => variable_get('brukar_url', '') != '',
+	  '#collapsed' => variable_get('brukar_url', '') != '',
+	);
+  $form['server']['brukar_url'] = array(
     '#type' => 'textfield',
     '#title' => 'Adresse',
     '#default_value' => variable_get('brukar_url', ''),
   );
-  $form['brukar_consumer_key'] = array(
+  $form['server']['brukar_consumer_key'] = array(
     '#type' => 'textfield',
-    '#title' => 'Consumber key',
+    '#title' => 'Consumer key',
     '#default_value' => variable_get('brukar_consumer_key', ''),
   );
-  $form['brukar_consumer_secret'] = array(
+  $form['server']['brukar_consumer_secret'] = array(
     '#type' => 'textfield',
-    '#title' => 'Consumber secret',
+    '#title' => 'Consumer secret',
     '#default_value' => variable_get('brukar_consumer_secret', ''),
   );
-  $form['brukar_keyword'] = array(
+  $form['behavior'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Behavior',
+  );
+  $form['behavior']['brukar_keyword'] = array(
     '#type' => 'textfield',
     '#title' => 'Keyword',
     '#default_value' => variable_get('brukar_keyword', 'brukar'),
   );
-  $form['brukar_forced'] = array(
-    '#type' => 'checkbox',
+  $form['behavior']['brukar_name'] = array(
+    '#type' => 'select',
+    '#title' => 'Name in database',
+    '#options' => array(
+      '!name' => '[Name]',
+      '!name (!sident)' => '[Name] ([Short ident])',
+      '!ident' => '[Ident]',
+    ),
+    '#default_value' => variable_get('brukar_name', '!name'),
+  );
+  $form['behavior']['brukar_forced'] = array(
+    '#type' => 'radios',
     '#title' => 'Forced login',
+    '#options' => array('Nei', 'Ja'),
     '#default_value' => variable_get('brukar_forced', '0'),
   );
 
@@ -70,44 +91,32 @@ function brukar_oauth_callback() {
 function brukar_login($data) {
   global $user;
 
+  $edit = array(
+    'name' => t(variable_get('brukar_name', '!name'), array(
+      '!name' => $data['name'],
+      '!sident' => substr($data['id'], 0, 4),
+      '!ident' => $data['id'],
+    )),
+    'mail' => $data['mail'],
+    'status' => 1,
+    'data' => array('brukar' => $data),
+  );
+
   if ($user->uid != 0) {
-    user_save($user, array(
-      'ident' => $data['id'],
-      'name' => $data['name'],
-      'mail' => $data['mail'],
-      'homepage' => $data['homepage'],
-    ));
+    user_save($user, $edit);
     user_set_authmaps($user, array('authname_brukar' => $data['id']));
       drupal_goto('user');
   }
 
-  $user = db_query('SELECT uid FROM {authmap} WHERE authname = :ident', array(':ident' => $data['id']))->fetch();
+  $user = db_query('SELECT uid FROM {authmap} WHERE module = :module AND authname = :ident', array(':ident' => $data['id'], ':module' => 'brukar'))->fetch();
   if ($user === false) {
-    $edit = array(
-      'ident' => $data['id'],
-      'name' => $data['name'],
-      'mail' => $data['mail'],
-      'phone' => $data['phone'],
-      'organization' => $data['organization'],
-      'homepage' => $data['homepage'],
-      'status' => 1,
-    );
     $user = user_save(null, $edit);
-
     user_set_authmaps($user, array('authname_brukar' => $data['id']));
   } else {
-    $account = user_load($user->uid);
-    $edit = array(
-      'name' => $data['name'],
-      'mail' => $data['mail'],
-      'phone' => isset($data['phone']) ? $data['phone'] : null,
-      'organization' => $data['organization'],
-      'homepage' => $data['homepage'],
-    );
-    $user = user_save($account, $edit);
+    $user = user_save(user_load($user->uid), $edit);
   }
 
-  $form_state['uid'] = $user->uid;
+  $form_state = (array) $user;
   user_login_submit(array(), $form_state);
 
   drupal_goto($_GET['q'] == variable_get('site_frontpage') ? '<front>' : $_GET['q']);
