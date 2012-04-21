@@ -2,9 +2,18 @@
 
 /**
  * Helper function for profiles.
+ * 
+ *   function hook_install_tasks() {
+ *     return array(
+ *       'brukar_install_task' => array(
+ *         'display_name' => st('Brukar'), 
+ *         'type' => 'form',
+ *       ),
+ *     );
+ *   }
  */
 function brukar_install_task($form) {
-  require_once(drupal_get_path('module', 'brukar') . '/brukar.php');
+  require_once(drupal_get_path('module', 'brukar') . '/brukar.admin.php');
   return brukar_admin($form);
 }
 
@@ -18,7 +27,7 @@ function brukar_menu() {
     'page arguments' => array('brukar_admin'),
     'access arguments' => array('brukar admin'),
     'type' => MENU_LOCAL_TASK,
-    'file' => 'brukar.php',
+    'file' => 'brukar.admin.php',
   );
   $items['admin/config/people/brukar/settings'] = array(
     'title' => t('Settings'),
@@ -76,9 +85,7 @@ function brukar_init() {
 function brukar_user_page($force = FALSE) {
   global $user;
   if (isset($_GET['oauth_token']) || $force || ($user->uid === 0 && variable_get('brukar_url', '') != '')) {
-    global $user;
-    require_once(drupal_get_path('module', 'brukar') . '/brukar.php');
-    require_once(drupal_get_path('module', 'brukar') . '/OAuth.php');
+    require_once(drupal_get_path('module', 'brukar') . '/brukar.oauth.php');
     if (isset($_GET['oauth_token'])) {
       return brukar_oauth_callback();
     } elseif ($user->uid == 0 || $force) {
