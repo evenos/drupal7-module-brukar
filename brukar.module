@@ -26,7 +26,6 @@ function brukar_menu() {
 function brukar_menu_alter(&$items) {
   $items['user']['page callback'] = 'brukar_user_page';
   $items['user']['access callback'] = 'brukar_user_page_access';
-  $items['user']['title callback'] = 'brukar_username';
   
   unset($items['user/register']);
   unset($items['user/password']);

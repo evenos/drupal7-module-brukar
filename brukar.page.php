@@ -59,9 +59,14 @@ function brukar_oauth_request() {
   $req = OAuthRequest::from_consumer_and_token($consumer, NULL, 'GET', variable_get('brukar_url') . 'server/oauth/request_token', array('oauth_callback' => $callback));
   $req->sign_request($method, $consumer, NULL);
   parse_str(trim(file_get_contents($req->to_url())), $token);
-    
-  $_SESSION['auth_oauth'] = $token;
-  drupal_goto(variable_get('brukar_url') . 'server/oauth/authorize?oauth_token='.$token["oauth_token"]);
+
+  if (count($token) > 0) {    
+	  $_SESSION['auth_oauth'] = $token;
+	  drupal_goto(variable_get('brukar_url') . 'server/oauth/authorize?oauth_token='.$token["oauth_token"]);
+  } else {
+    drupal_set_message('Unable to retrieve token for login.', 'warning');
+    drupal_goto('<front>');
+  }
 }
 
 function brukar_oauth_callback() {
@@ -76,15 +81,17 @@ function brukar_oauth_callback() {
     parse_str(trim(file_get_contents($req->to_url())), $token);
 
     unset($_SESSION["auth_oauth"]);
-    
-    $token = new OAuthToken($token["oauth_token"], $token["oauth_token_secret"]);
-    $req = OAuthRequest::from_consumer_and_token($consumer, $token, "GET", variable_get('brukar_url') . 'server/oauth/user', array());
-    $req->sign_request($method, $consumer, $token);
 
-    brukar_login((array) json_decode(trim(file_get_contents($req->to_url()))));
+    if(count($token) > 0) {    
+      $token = new OAuthToken($token["oauth_token"], $token["oauth_token_secret"]);
+      $req = OAuthRequest::from_consumer_and_token($consumer, $token, "GET", variable_get('brukar_url') . 'server/oauth/user', array());
+      $req->sign_request($method, $consumer, $token);
+
+      brukar_login((array) json_decode(trim(file_get_contents($req->to_url()))));
+    }
   }
   
-  drupal_set_message('Det gikk feil under innlogging med OAuth. Prøv gjerne igjen.', 'warning');
+  drupal_set_message('Noe gikk feil under innlogging.', 'warning');
   drupal_goto('<front>');
 }
 
