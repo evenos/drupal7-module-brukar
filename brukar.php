@@ -1,6 +1,6 @@
 <?php
 
-function brukar_admin() {
+function brukar_admin($form, &$form_state = array()) {
 	$form['server'] = array(
 	  '#type' => 'fieldset',
 	  '#title' => 'Server',
@@ -49,6 +49,22 @@ function brukar_admin() {
   );
 
   return system_settings_form($form);
+}
+
+function brukar_admin_validate($form, &$form_state) {
+  require_once(drupal_get_path('module', 'brukar') . '/OAuth.php');
+
+  $method = new OAuthSignatureMethod_HMAC_SHA1();
+  $consumer = new OAuthConsumer($form_state['values']['brukar_consumer_key'], $form_state['values']['brukar_consumer_secret']);
+  $callback =  url($_GET['q'], array('absolute' => TRUE));
+
+  $req = OAuthRequest::from_consumer_and_token($consumer, NULL, 'GET', $form_state['values']['brukar_url'] . 'server/oauth/request_token', array('oauth_callback' => $callback));
+  $req->sign_request($method, $consumer, NULL);
+  parse_str(trim(@file_get_contents($req->to_url())), $token);
+
+  if (count($token) == 0) {
+    form_set_error('server', t('Invalid settings.'));
+  }
 }
 
 function brukar_oauth_request() {
@@ -101,8 +117,8 @@ function brukar_login($data) {
   $edit = array(
     'name' => t(variable_get('brukar_name', '!name'), array(
       '!name' => $data['name'],
-      '!sident' => substr($data['id'], 0, 4),
-      '!ident' => $data['id'],
+      '!sident' => substr($data['ident'], 0, 4),
+      '!ident' => $data['ident'],
     )),
     'mail' => $data['mail'],
     'status' => 1,
@@ -111,14 +127,14 @@ function brukar_login($data) {
 
   if ($user->uid != 0) {
     user_save($user, $edit);
-    user_set_authmaps($user, array('authname_brukar' => $data['id']));
+    user_set_authmaps($user, array('authname_brukar' => $data['ident']));
       drupal_goto('user');
   }
 
-  $user = db_query('SELECT uid FROM {authmap} WHERE module = :module AND authname = :ident', array(':ident' => $data['id'], ':module' => 'brukar'))->fetch();
+  $user = db_query('SELECT uid FROM {authmap} WHERE module = :module AND authname = :ident', array(':ident' => $data['ident'], ':module' => 'brukar'))->fetch();
   if ($user === false) {
     $user = user_save(null, $edit);
-    user_set_authmaps($user, array('authname_brukar' => $data['id']));
+    user_set_authmaps($user, array('authname_brukar' => $data['ident']));
   } else {
     $user = user_save(user_load($user->uid), $edit);
   }
