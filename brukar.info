@@ -3,3 +3,4 @@ description = Integrasjon mot brukar-server.
 core = 7.x
 package = Klakegg
 version = 0.2
+configure = admin/config/people/brukar
