@@ -122,9 +122,6 @@ function brukar_user_page_access() {
 function brukar_user_view_alter(&$build) {
   global $user;
 
-  if (isset($build['summary']['member_for']))
-    unset($build['summary']['member_for']);
-
   if (!isset($user->data['brukar']))
     $build['brukar'] = drupal_get_form('brukar_form_login');
 }
