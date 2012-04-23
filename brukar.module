@@ -2,11 +2,11 @@
 
 /**
  * Helper function for profiles.
- * 
+ *
  *   function hook_install_tasks() {
  *     return array(
  *       'brukar_install_task' => array(
- *         'display_name' => st('Brukar'), 
+ *         'display_name' => st('Brukar'),
  *         'type' => 'form',
  *       ),
  *     );
@@ -30,7 +30,7 @@ function brukar_menu() {
     'file' => 'brukar.admin.php',
   );
   $items['admin/config/people/brukar/settings'] = array(
-    'title' => t('Settings'),
+    'title' => 'Settings',
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
 
@@ -43,7 +43,7 @@ function brukar_menu() {
 function brukar_menu_alter(&$items) {
   $items['user']['page callback'] = 'brukar_user_page';
   $items['user']['access callback'] = 'brukar_user_page_access';
-  
+
   unset($items['user/register']);
   unset($items['user/password']);
   unset($items['user/reset/%/%/%']);
@@ -59,7 +59,7 @@ function brukar_permission() {
       'description' => 'Perform administration tasks for brukar module.',
     ),
   );
-}  
+}
 
 /**
  * Implements hook_init().
@@ -88,7 +88,8 @@ function brukar_user_page($force = FALSE) {
     require_once(drupal_get_path('module', 'brukar') . '/brukar.oauth.php');
     if (isset($_GET['oauth_token'])) {
       return brukar_oauth_callback();
-    } elseif ($user->uid == 0 || $force) {
+    }
+    elseif ($user->uid == 0 || $force) {
       return brukar_oauth_request();
     }
   }
@@ -131,11 +132,11 @@ function brukar_form_login_submit($form, &$form_state) {
  */
 function brukar_user_load($users) {
   foreach ($users as $uid => $user) {
-  	if (isset($user->data['brukar'])) {
+    if (isset($user->data['brukar'])) {
       $user->phone = $user->data['brukar']['phone'];
       $user->organization = $user->data['brukar']['organization'];
       $user->homepage = $user->data['brukar']['homepage'];
-  	}
+    }
 
     $users[$uid] = $user;
   }

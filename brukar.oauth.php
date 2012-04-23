@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 function brukar_oauth_request() {
   require_once(drupal_get_path('module', 'brukar') . '/OAuth.php');
 
@@ -11,11 +15,12 @@ function brukar_oauth_request() {
   $req->sign_request($method, $consumer, NULL);
   parse_str(trim(file_get_contents($req->to_url())), $token);
 
-  if (count($token) > 0) {    
-	  $_SESSION['auth_oauth'] = $token;
-	  drupal_goto(variable_get('brukar_url') . 'server/oauth/authorize?oauth_token='.$token["oauth_token"]);
-  } else {
-    drupal_set_message('Unable to retrieve token for login.', 'warning');
+  if (count($token) > 0) {
+    $_SESSION['auth_oauth'] = $token;
+    drupal_goto(variable_get('brukar_url') . 'server/oauth/authorize?oauth_token=' . $token["oauth_token"]);
+  }
+  else {
+    drupal_set_message(t('Unable to retrieve token for login.'), 'warning');
     drupal_goto('<front>');
   }
 }
@@ -35,7 +40,7 @@ function brukar_oauth_callback() {
 
     unset($_SESSION["auth_oauth"]);
 
-    if(count($token) > 0) {    
+    if (count($token) > 0) {
       $token = new OAuthToken($token["oauth_token"], $token["oauth_token_secret"]);
       $req = OAuthRequest::from_consumer_and_token($consumer, $token, "GET", variable_get('brukar_url') . 'server/oauth/user', array());
       $req->sign_request($method, $consumer, $token);
@@ -43,8 +48,8 @@ function brukar_oauth_callback() {
       brukar_login((array) json_decode(trim(file_get_contents($req->to_url()))));
     }
   }
-  
-  drupal_set_message('Noe gikk feil under innlogging.', 'warning');
+
+  drupal_set_message(t('Noe gikk feil under innlogging.'), 'warning');
   drupal_goto('<front>');
 }
 
@@ -69,10 +74,11 @@ function brukar_login($data) {
   }
 
   $user = db_query('SELECT uid FROM {authmap} WHERE module = :module AND authname = :ident', array(':ident' => $data['ident'], ':module' => 'brukar'))->fetch();
-  if ($user === false) {
-    $user = user_save(null, $edit);
+  if ($user === FALSE) {
+    $user = user_save(NULL, $edit);
     user_set_authmaps($user, array('authname_brukar' => $data['ident']));
-  } else {
+  }
+  else {
     $user = user_save(user_load($user->uid), $edit);
   }
 

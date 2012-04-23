@@ -1,12 +1,16 @@
 <?php
 
+/**
+ * @file
+ */
+
 function brukar_admin($form, &$form_state = array()) {
-	$form['server'] = array(
-	  '#type' => 'fieldset',
-	  '#title' => 'Server',
-	  '#collapsible' => variable_get('brukar_url', '') != '',
-	  '#collapsed' => variable_get('brukar_url', '') != '',
-	);
+  $form['server'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Server',
+    '#collapsible' => variable_get('brukar_url', '') != '',
+    '#collapsed' => variable_get('brukar_url', '') != '',
+  );
   $form['server']['brukar_url'] = array(
     '#type' => 'textfield',
     '#title' => 'Adresse',
