@@ -51,7 +51,13 @@ function brukar_admin($form, &$form_state = array()) {
     '#options' => array('Nei', 'Ja'),
     '#default_value' => variable_get('brukar_forced', '0'),
   );
-
+  $form['behavior']['brukar_hidden'] = array(
+    '#type' => 'radios',
+    '#title' => 'Hidden login',
+    '#options' => array('Nei', 'Ja'),
+    '#default_value' => variable_get('brukar_hidden', '0'),
+  );
+  
   return system_settings_form($form);
 }
 
