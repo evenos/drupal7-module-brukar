@@ -1,0 +1,7 @@
+<?php
+
+function brukar_role_user_login(&$edit, $account) {
+  if (isset($account->data['brukar']) && isset($account->data['brukar']['role'])) {
+    // TODO
+  }
+} 
