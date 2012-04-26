@@ -41,13 +41,26 @@ function brukar_menu() {
  * Implements hook_menu_alter().
  */
 function brukar_menu_alter(&$items) {
-  $items['user']['page arguments'] = array($items['user']['page callback']);
-  $items['user']['page callback'] = 'brukar_user_page';
-  $items['user']['access callback'] = 'brukar_user_page_access';
+  if (variable_get('brukar_dup', '0') == 1) {
+    $items['user']['page arguments'] = array($items['user']['page callback']);
+    $items['user']['page callback'] = 'brukar_user_page';
+    $items['user']['access callback'] = 'brukar_user_page_access';
 
-  unset($items['user/register']);
-  unset($items['user/password']);
-  unset($items['user/reset/%/%/%']);
+    unset($items['user/register']);
+    unset($items['user/password']);
+    unset($items['user/reset/%/%/%']);
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Adds link to login form if brukar isn't hidden.
+ */
+function brukar_form_user_login_alter(&$form, &$form_state, $form_id) {
+  $form['brukar'] = array(
+    '#markup' => l('Logg inn med brukar.', $_GET['q'], array('query' => $_GET + array('brukar' => NULL))),
+  );
 }
 
 /**
@@ -71,12 +84,12 @@ function brukar_init() {
     require_once(drupal_get_path('module', 'brukar') . '/brukar.oauth.php');
     brukar_oauth_callback();
   }
-  
+
   if (user_is_anonymous()) {
     // Forced login
     if (variable_get('brukar_forced', '0') != 0)
       brukar_user_trigger();
-  
+
     // Magic login
     if (isset($_GET[variable_get('brukar_keyword', 'brukar')]))
       brukar_user_trigger();
@@ -97,11 +110,11 @@ function brukar_user_trigger() {
   // Do login on /user if allowed
   if ($_GET['q'] == 'user' && variable_get('brukar_hidden', 0) == 0)
     $_GET['q'] = isset($_GET['destination']) ? $_GET['destination'] : '<front>';
-  
+
   // Remove keywork from URI if found
   if (isset($_GET[variable_get('brukar_keyword', 'brukar')]))
     unset($_GET[variable_get('brukar_keyword', 'brukar')]);
-  
+
   // Fetch request token IF you are supposed to be allowed
   if (variable_get('brukar_url', '') != '') {
     require_once(drupal_get_path('module', 'brukar') . '/brukar.oauth.php');
@@ -127,7 +140,7 @@ function brukar_user_view_alter(&$build) {
 }
 
 /**
- * Form containing one button to trigger forced login. 
+ * Form containing one button to trigger forced login.
  */
 function brukar_form_login($form, &$form_state) {
   $form['submit'] = array(
@@ -164,6 +177,6 @@ function brukar_user_load($users) {
  * Implements hook_username_alter().
  */
 function brukar_username_alter(&$name, $account) {
-  if (is_array($account->data) && isset($account->data['brukar']))
+  if (isset($account->data) && is_array($account->data) && isset($account->data['brukar']))
     $name = $account->data['brukar']['name'];
 }

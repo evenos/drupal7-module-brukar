@@ -10,18 +10,18 @@ function brukar_role_user_login(&$edit, $account) {
     foreach ($roles as $key => $value)
       if (substr($value, 0, 7) == 'brukar ')
         unset($roles[$key]);
-    
+
     // Fetch or create role
-  	$role = user_role_load_by_name('brukar ' . $account->data['brukar']['role']);
-  	if ($role === false) {
-  	  $role = new stdClass();
+    $role = user_role_load_by_name('brukar ' . $account->data['brukar']['role']);
+    if ($role === FALSE) {
+      $role = new stdClass();
       $role->name = 'brukar ' . $account->data['brukar']['role'];
       $role->weight = 2;
       user_role_save($role);
     }
-  	
+
     // Add role and save result
-  	$roles[$role->rid] = $role->name;
-  	user_save($account, array('roles' => $roles));
+    $roles[$role->rid] = $role->name;
+    user_save($account, array('roles' => $roles));
   }
-} 
+}

@@ -57,6 +57,12 @@ function brukar_admin($form, &$form_state = array()) {
     '#options' => array('Nei', 'Ja'),
     '#default_value' => variable_get('brukar_hidden', '0'),
   );
+  $form['behavior']['brukar_dup'] = array(
+    '#type' => 'radios',
+    '#title' => 'Disable username/password',
+    '#options' => array('Nei', 'Ja'),
+    '#default_value' => variable_get('brukar_dup', '0'),
+  );
   
   return system_settings_form($form);
 }
@@ -76,3 +82,5 @@ function brukar_admin_validate($form, &$form_state) {
     form_set_error('server', t('Invalid settings.'));
   }
 }
+
+// TODO menu_rebuild() after submit.
