@@ -11,9 +11,9 @@ function brukar_oauth_request() {
   $consumer = new OAuthConsumer(variable_get('brukar_consumer_key'), variable_get('brukar_consumer_secret'));
 
   // Better solution available?
-  $q = $_GET['q'];
-  unset($_GET['q']);
-  $callback =  url($q, array('absolute' => TRUE, 'query' => $_GET));
+  $query = $_GET;
+  unset($query['q']);
+  $callback =  url($_GET['q'], array('absolute' => TRUE, 'query' => $query));
 
   $req = OAuthRequest::from_consumer_and_token($consumer, NULL, 'GET', variable_get('brukar_url') . 'server/oauth/request_token', array('oauth_callback' => $callback));
   $req->sign_request($method, $consumer, NULL);
@@ -91,7 +91,7 @@ function brukar_login($data) {
   user_login_submit(array(), $form_state);
 
   // Better solution available?
-  $q = $_GET['q'];
-  unset($_GET['q']);
-  drupal_goto($q == variable_get('site_frontpage') ? '<front>' : url($q, array('absolute' => TRUE, 'query' => $_GET)));
+  $query = $_GET;
+  unset($query['q']);
+  drupal_goto($_GET['q'] == variable_get('site_frontpage') ? '<front>' : url($_GET['q'], array('absolute' => TRUE, 'query' => $query)));
 }
