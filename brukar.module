@@ -64,18 +64,6 @@ function brukar_form_user_login_alter(&$form, &$form_state, $form_id) {
 }
 
 /**
- * Implements hook_permission().
- */
-function brukar_permission() {
-  return array(
-    'brukar admin' => array(
-      'title' => 'Brukar administrator',
-      'description' => 'Perform administration tasks for brukar module.',
-    ),
-  );
-}
-
-/**
  * Implements hook_init().
  */
 function brukar_init() {
