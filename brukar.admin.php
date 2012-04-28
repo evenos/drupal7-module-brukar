@@ -68,7 +68,7 @@ function brukar_admin($form, &$form_state = array()) {
 }
 
 function brukar_admin_validate($form, &$form_state) {
-  require_once(drupal_get_path('module', 'brukar') . '/OAuth.php');
+  require_once(drupal_get_path('module', 'brukar_common') . '/OAuth.php');
 
   $method = new OAuthSignatureMethod_HMAC_SHA1();
   $consumer = new OAuthConsumer($form_state['values']['brukar_consumer_key'], $form_state['values']['brukar_consumer_secret']);

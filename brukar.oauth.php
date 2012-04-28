@@ -5,7 +5,7 @@
  */
 
 function brukar_oauth_request() {
-  require_once(drupal_get_path('module', 'brukar') . '/OAuth.php');
+  require_once(drupal_get_path('module', 'brukar_common') . '/OAuth.php');
 
   $method = new OAuthSignatureMethod_HMAC_SHA1();
   $consumer = new OAuthConsumer(variable_get('brukar_consumer_key'), variable_get('brukar_consumer_secret'));
@@ -30,7 +30,7 @@ function brukar_oauth_request() {
 }
 
 function brukar_oauth_callback() {
-  require_once(drupal_get_path('module', 'brukar') . '/OAuth.php');
+  require_once(drupal_get_path('module', 'brukar_common') . '/OAuth.php');
 
   $method = new OAuthSignatureMethod_HMAC_SHA1();
   $consumer = new OAuthConsumer(variable_get('brukar_consumer_key'), variable_get('brukar_consumer_secret'));

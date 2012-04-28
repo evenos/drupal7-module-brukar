@@ -4,12 +4,12 @@
  * Implements hook_permission().
  */
 function brukar_common_permission() {
-  return array(
-    'brukar admin' => array(
-      'title' => 'Brukar administrator',
-      'description' => 'Perform administration tasks for brukar module.',
-    ),
+  $roles['brukar admin'] = array(
+    'title' => 'Brukar administrator',
+    'description' => 'Perform administration tasks for brukar module.',
   );
+  
+  return $roles;
 }
 
 /**
@@ -38,3 +38,5 @@ function brukar_common_uuid() {
     mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
   );
 }
+
+// TODO Extended user profile.
