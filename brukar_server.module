@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function brukar_server_menu() {
+	return array(
+    'admin/structure/brukar' => array(
+      'title' => 'Brukar',
+      'page callback' => 'brukar_server_admin_applications',
+      'access arguments' => array('brukar admin'),
+      'type' => MENU_LOCAL_TASK,
+      'file' => 'brukar_server.admin.php',
+    ),
+    'admin/structure/brukar/application' => array(
+      'title' => 'Applikasjoner',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+    ),
+
+	  'server/oauth/request_token' => array(
+	    'title' => 'OAuth Server: Request Token',
+      'page callback' => 'brukar_server_oauth_request_token',
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+      'file' => 'brukar_server.oauth.php',
+	  ),
+	  'server/oauth/authorize' => array(
+	    'title' => 'Access',
+      'page callback' => 'brukar_server_oauth_authorize',
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+      'file' => 'brukar_server.oauth.php',
+	  ),
+	  'server/oauth/access_token' => array(
+	    'title' => 'OAuth Server: Access Token',
+      'page callback' => 'brukar_server_oauth_access_token',
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+      'file' => 'brukar_server.oauth.php',
+	  ),
+	  'server/oauth/user' => array(
+	    'title' => 'OAuth Server: User',
+      'page callback' => 'brukar_server_oauth_user',
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+      'file' => 'brukar_server.oauth.php',
+	  ),
+	);
+}

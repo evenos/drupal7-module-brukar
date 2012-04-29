@@ -1,0 +1,7 @@
+name = Brukar Server
+description = Server.
+core = 7.x
+package = Brukar
+version = 0.4
+
+dependencies[] = brukar_common

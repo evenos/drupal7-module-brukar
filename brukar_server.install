@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function brukar_server_schema() {
+  return array();
+}
