@@ -83,4 +83,6 @@ function brukar_admin_validate($form, &$form_state) {
   }
 }
 
-// TODO menu_rebuild() after submit.
+function brukar_admin_submit($form, &$form_state) {
+  menu_rebuild();
+}
