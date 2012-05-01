@@ -4,5 +4,108 @@
  * Implements hook_schema().
  */
 function brukar_server_schema() {
-  return array();
+  $schema['brukar_token'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+      ),
+      'application_id' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'type' => 'varchar',
+        'length' => 30,
+        'not null' => TRUE,
+      ),
+      'token_key' => array(
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => TRUE,
+      ),
+      'token_secret' => array(
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => TRUE,
+      ),
+      'callback' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'created' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'last_used' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'key' => array('key', 'type'),
+      'accessed' => array('uid', 'last_used'),
+      'uid' => array('uid', 'type'),
+    ),
+  );
+ 
+  $schema['brukar_application'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'lenght' => 150,
+        'not null' => TRUE,
+      ),
+      'consumer_key' => array(
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => TRUE,
+      ),
+      'consumer_secret' => array(
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => TRUE,
+      ),
+      'active' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'url_homepage' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'url_login' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'url_callback' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'key' => array('key'),
+      'uid' => array('uid'),
+    ),
+  );
+
+  return $schema;
 }
