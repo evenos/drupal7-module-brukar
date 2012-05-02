@@ -3,10 +3,7 @@
 /**
  * Implements hook_user_login().
  */
-function brukar_role_user_login(&$edit, $account) {
-  if (!module_exists('brukar'))
-    return;
-	
+function brukar_client_role_user_login(&$edit, $account) {
   if (isset($account->data['brukar']) && isset($account->data['brukar']['role'])) {
     // Remove 'brukar %'-roles from the user
     $roles = $account->roles;
