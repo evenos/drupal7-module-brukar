@@ -1,0 +1,7 @@
+name = Brukar Client 403
+description = 403-side som viser vei til innlogging.
+core = 7.x
+package = Brukar
+version = 0.4
+
+dependencies[] = brukar

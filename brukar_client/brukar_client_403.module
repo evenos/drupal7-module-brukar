@@ -1,0 +1,66 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function brukar_client_403_menu() {
+  $items['brukar/403'] = array(
+    'title' => t('Access denied'),
+    'page callback' => 'brukar_client_403_page',
+    'access callback' => TRUE,
+  );
+  $items['brukar/403/%'] = array(
+    'title' => t('Access denied'),
+    'page callback' => 'brukar_client_403_page',
+    'page arguments' => array(2),
+    'access callback' => TRUE,
+  );
+  $items['admin/config/people/brukar/403'] = array(
+    'title' => '403',
+    'page callback' => 'brukar_client_403_admin',
+    'access arguments' => array('brukar admin'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'brukar_client_403.admin.php',
+    'weight' => 10,
+  );
+
+
+  return $items;  
+}
+
+/**
+ * Page presenting custom 403 message.
+ */
+function brukar_client_403_page($token = null) {
+	$message = t('You are not authorized to access this page.');
+	if ((variable_get(user_is_anonymous() ? 'brukar_client_403_anon' : 'brukar_client_403_auth', '')) != '')
+	  $message = variable_get(user_is_anonymous() ? 'brukar_client_403_anon' : 'brukar_client_403_auth', '');
+	
+	if (!is_null($token)) {
+	  $result = db_select('brukar_client_403', 'm')
+    ->fields('m')
+    ->condition('token', $token)
+    ->execute()
+    ->fetch();
+    
+    if ((user_is_anonymous() ? $result->message_anonymous : $result->message_autenticated) != '')
+      $message = (user_is_anonymous() ? $result->message_anonymous : $result->message_autenticated);
+	}
+	
+	$page['message'] = array(
+    '#prefix' => '<p>',
+	  '#markup' => $message,
+	  '#suffix' => '</p>',
+	);
+	
+	$url = isset($_GET['destination']) ? $_GET['destination'] : $_GET['q'];
+	
+	$page['buttons'] = array(
+	  '#theme' => 'item_list',
+	  '#items' => array(
+	    l('Fortsett til innlogging.', $url, array('query' => array(variable_get('brukar_keyword') => NULL))),
+	  ),
+	); 
+
+  return $page;
+} 

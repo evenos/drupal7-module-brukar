@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function brukar_client_403_schema() {
+  $schema['brukar_client_403'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'token' => array(
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => TRUE,
+      ),
+      'message_anonymous' => array(
+        'type' => 'varchar',
+        'length' => 1000,
+        'not null' => FALSE,
+      ),
+      'message_authenticated' => array(
+        'type' => 'varchar',
+        'length' => 1000,
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'token' => array('token'),
+    ),
+  );
+
+  return $schema;
+}

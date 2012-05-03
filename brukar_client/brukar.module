@@ -24,7 +24,6 @@ function brukar_menu() {
   $items['admin/config/people/brukar'] = array(
     'title' => 'Brukar',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('brukar_admin'),
     'access arguments' => array('brukar admin'),
     'type' => MENU_LOCAL_TASK,
     'file' => 'brukar.admin.php',
