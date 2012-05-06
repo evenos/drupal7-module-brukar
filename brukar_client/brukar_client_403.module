@@ -52,15 +52,15 @@ function brukar_client_403_page($token = null) {
 	  '#markup' => $message,
 	  '#suffix' => '</p>',
 	);
-	
-	$url = isset($_GET['destination']) ? $_GET['destination'] : $_GET['q'];
-	
-	$page['buttons'] = array(
-	  '#theme' => 'item_list',
-	  '#items' => array(
-	    l('Fortsett til innlogging.', $url, array('query' => array(variable_get('brukar_keyword') => NULL))),
-	  ),
-	); 
+
+  if (user_is_anonymous()) {	
+		$page['buttons'] = array(
+		  '#theme' => 'item_list',
+		  '#items' => array(
+		    l('Fortsett til innlogging.', isset($_GET['destination']) ? $_GET['destination'] : $_GET['q'], array('query' => array(variable_get('brukar_keyword') => NULL))),
+		  ),
+		);
+  }
 
   return $page;
 } 
