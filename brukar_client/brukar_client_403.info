@@ -4,4 +4,4 @@ core = 7.x
 package = Brukar
 version = 0.4
 
-dependencies[] = brukar
+dependencies[] = brukar_client
