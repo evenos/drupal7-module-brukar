@@ -23,7 +23,13 @@ function brukar_client_403_menu() {
     'file' => 'brukar_client_403.admin.php',
     'weight' => 10,
   );
-
+  $items['admin/config/people/brukar/403/%'] = array(
+      'title' => '403',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('brukar_client_403_admin_form', 5),
+      'access arguments' => array('brukar admin'),
+      'file' => 'brukar_client_403.admin.php',
+  );
 
   return $items;  
 }
