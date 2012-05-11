@@ -13,7 +13,7 @@
  *   }
  */
 function brukar_client_install_task($form) {
-  require_once(drupal_get_path('module', 'brukar') . '/brukar_client.admin.php');
+  require_once(drupal_get_path('module', 'brukar_client') . '/brukar_client.admin.php');
   return brukar_client_admin($form);
 }
 
@@ -71,7 +71,7 @@ function brukar_client_form_user_login_alter(&$form, &$form_state, $form_id) {
 function brukar_client_init() {
   // Handle callback
   if (isset($_GET['oauth_token'])) {
-    require_once(drupal_get_path('module', 'brukar') . '/brukar_client.oauth.php');
+    require_once(drupal_get_path('module', 'brukar_client') . '/brukar_client.oauth.php');
     brukar_client_oauth_callback();
   }
 
@@ -107,7 +107,7 @@ function brukar_client_user_trigger() {
 
   // Fetch request token IF you are supposed to be allowed
   if (variable_get('brukar_url', '') != '') {
-    require_once(drupal_get_path('module', 'brukar') . '/brukar_client.oauth.php');
+    require_once(drupal_get_path('module', 'brukar_client') . '/brukar_client.oauth.php');
     return brukar_client_oauth_request();
   }
 }
