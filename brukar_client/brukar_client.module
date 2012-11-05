@@ -69,20 +69,23 @@ function brukar_client_form_user_login_alter(&$form, &$form_state, $form_id) {
  * Implements hook_init().
  */
 function brukar_client_init() {
-  // Handle callback
-  if (isset($_GET['oauth_token'])) {
-    require_once(drupal_get_path('module', 'brukar_client') . '/brukar_client.oauth.php');
-    brukar_client_oauth_callback();
-  }
-
-  if (user_is_anonymous()) {
-    // Forced login
-    if (variable_get('brukar_forced', '0') != 0)
-      brukar_client_user_trigger();
-
-    // Magic login
-    if (isset($_GET[variable_get('brukar_keyword', 'brukar')]))
-      brukar_client_user_trigger();
+  // Allow drush to do the job.
+  if (!function_exists('drush_main')) {
+    // Handle callback
+    if (isset($_GET['oauth_token'])) {
+      require_once(drupal_get_path('module', 'brukar_client') . '/brukar_client.oauth.php');
+      brukar_client_oauth_callback();
+    }
+  
+    if (user_is_anonymous()) {
+      // Forced login
+      if (variable_get('brukar_forced', '0') != 0)
+        brukar_client_user_trigger();
+  
+      // Magic login
+      if (isset($_GET[variable_get('brukar_keyword', 'brukar')]))
+        brukar_client_user_trigger();
+    }
   }
 }
 
