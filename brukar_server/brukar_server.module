@@ -4,7 +4,7 @@
  * Implements hook_menu().
  */
 function brukar_server_menu() {
-	return array(
+  return array(
     'admin/structure/brukar' => array(
       'title' => 'Brukar',
       'page callback' => 'brukar_server_admin_overview',
@@ -25,7 +25,7 @@ function brukar_server_menu() {
       'file' => 'brukar_server.admin.php',
       'weight' => 10,
     ),
-	  'admin/structure/brukar/application/add' => array(
+    'admin/structure/brukar/application/add' => array(
       'title' => 'Add application',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('brukar_server_admin_applications_form'),
@@ -33,7 +33,7 @@ function brukar_server_menu() {
       'type' => MENU_LOCAL_ACTION,
       'file' => 'brukar_server.admin.php',
     ),
-	  'admin/structure/brukar/application/%brukar_application' => array(
+    'admin/structure/brukar/application/%brukar_application' => array(
       'title' => 'Applikasjon',
       'title callback' => 'brukar_server_admin_applications_title',
       'title arguments' => array(4),
@@ -43,8 +43,8 @@ function brukar_server_menu() {
       'type' => MENU_CALLBACK,
       'file' => 'brukar_server.admin.php',
     ),
-	  'admin/structure/brukar/application/%brukar_application/edit' => array(
-	    'title' => 'Edit',
+    'admin/structure/brukar/application/%brukar_application/edit' => array(
+      'title' => 'Edit',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('brukar_server_admin_applications_form', 4),
       'access arguments' => array('brukar admin'),
@@ -76,35 +76,35 @@ function brukar_server_menu() {
       'file' => 'brukar_server.admin.php',
     ),
 	    
-	  'server/oauth/request_token' => array(
-	    'title' => 'OAuth Server: Request Token',
+    'server/oauth/request_token' => array(
+      'title' => 'OAuth Server: Request Token',
       'page callback' => 'brukar_server_oauth_request_token',
       'access arguments' => array('access content'),
       'type' => MENU_CALLBACK,
       'file' => 'brukar_server.oauth.php',
 	  ),
-	  'server/oauth/authorize' => array(
-	    'title' => 'Access',
+    'server/oauth/authorize' => array(
+      'title' => 'Access',
       'page callback' => 'brukar_server_oauth_authorize',
       'access arguments' => array('access content'),
       'type' => MENU_CALLBACK,
       'file' => 'brukar_server.oauth.php',
-	  ),
-	  'server/oauth/access_token' => array(
-	    'title' => 'OAuth Server: Access Token',
+    ),
+    'server/oauth/access_token' => array(
+      'title' => 'OAuth Server: Access Token',
       'page callback' => 'brukar_server_oauth_access_token',
       'access arguments' => array('access content'),
       'type' => MENU_CALLBACK,
       'file' => 'brukar_server.oauth.php',
-	  ),
-	  'server/oauth/user' => array(
-	    'title' => 'OAuth Server: User',
+    ),
+    'server/oauth/user' => array(
+      'title' => 'OAuth Server: User',
       'page callback' => 'brukar_server_oauth_user',
       'access arguments' => array('access content'),
       'type' => MENU_CALLBACK,
       'file' => 'brukar_server.oauth.php',
-	  ),
-	);
+    ),
+  );
 }
 
 function brukar_application_load($id) {
@@ -123,12 +123,12 @@ function brukar_application_load($id) {
 function brukar_access_load($id) {
   // $app = cache_get('brukar_access:' . $id);
   // if ($app === FALSE) {
-  $app = db_select('brukar_access', 'a')
-  ->condition('id', $id)
-  ->fields('a')
-  ->execute()
-  ->fetch();
-  // cache_set('brukar_access:' . $id, $app);
+    $app = db_select('brukar_access', 'a')
+      ->condition('id', $id)
+      ->fields('a')
+      ->execute()
+      ->fetch();
+    // cache_set('brukar_access:' . $id, $app);
   // }
   return $app;
 }

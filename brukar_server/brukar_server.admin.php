@@ -1,7 +1,7 @@
 <?php
 
 function brukar_server_admin_overview() {
-   return '';
+  return '';
 }
  
 function brukar_server_admin_applications() {
