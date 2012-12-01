@@ -11,22 +11,28 @@ function brukar_server_oauth_request_token() {
 }
 
 function brukar_server_oauth_authorize() {
-  if (!isset($_GET['oauth_token']))
-    drupal_goto('<front>');
-  
   global $user;
 
-  $token = db_select('brukar_token', 't')->fields('t')->condition('token_key', $_GET['oauth_token'], '=')->execute()->fetch();
-
-  if ($user->uid != 0) {
-    $token->uid = $user->uid;
-    drupal_write_record('brukar_token', $token, 'id');
-    drupal_goto($token->callback . '?oauth_token=' . $token->token_key);
-  } else {
-    
+  if (isset($_SESSION['oauth_token'])) {
+    $_GET['oauth_token'] = $_SESSION['oauth_token'];
+    unset($_SESSION['oauth_token']);
   }
+
+  if (isset($_GET['oauth_token'])) {
+    $token = _lookup_token($_GET['oauth_token'], 'request');
   
-  return '';
+    if ($token !== FALSE) {
+      if ($user->uid != 0) {
+        $token->uid = $user->uid;
+        drupal_write_record('brukar_token', $token, 'id');
+        drupal_goto($token->callback . '?oauth_token=' . $token->token_key);
+      } else {
+        $_SESSION['oauth_token'] = $_GET['oauth_token'];
+      }
+    }
+  }
+
+  drupal_goto('<front>');
 }
 
 function brukar_server_oauth_access_token() {
@@ -38,6 +44,15 @@ function brukar_server_oauth_access_token() {
 }
 
 function brukar_server_oauth_user() {
-  return '';
+  $server = _brukar_server();
+  $request = OAuthRequest::from_request();
+  list($consumer, $token) = $server->verify_request($request);
+  $user = user_load($token->uid);
+  
+  echo json_encode(array(
+    'id' => $user->uid,
+    'name' => $user->name,
+    'mail' => $user->mail,  
+  ));
+  exit();
 }
-

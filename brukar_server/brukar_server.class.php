@@ -39,7 +39,7 @@ class BrukarServerToken extends OAuthToken {
 class BrukarServerConsumer extends OAuthConsumer {
   public $id = null;
   
-    function __construct($key, $secret, $callback_url=NULL, $id = NULL) {
+  function __construct($key, $secret, $callback_url = NULL, $id = NULL) {
     $this->id = $id;
   	parent::__construct($key, $secret, $callback_url);
   }
@@ -59,13 +59,13 @@ class BrukarServerDataStore extends OAuthDataStore {
   
   function lookup_token($consumer, $token_type, $token) {
     $token = _lookup_token($token, $token_type);
-    if ($token_type == 'access') {
+    /* if ($token_type == 'access') {
       $record = array(
         'id' => $token->id,
         'last_used' => time(),
       );
       drupal_write_record('brukar_token', $record, 'id');
-    }
+    } */
     return new BrukarServerToken($token->token_key, $token->token_secret, $token->id, $token->uid);
   }
 
@@ -89,7 +89,7 @@ class BrukarServerDataStore extends OAuthDataStore {
   }
 
   function new_access_token($token, $consumer, $verifier = null) {
-    // db_query('DELETE FROM {auth_token} WHERE `id` = :id', array(':id' => $token->id))->execute();
+    // db_query('DELETE FROM {brukar_token} WHERE `id` = :id', array(':id' => $token->id))->execute();
 
     $aTokenD = db_query('SELECT * FROM {brukar_token} WHERE `type` = :type AND uid = :uid AND application_id = :aid', array(':uid' => $token->uid, ':aid' => $consumer->id, ':type' => 'access'))->fetch();
 
