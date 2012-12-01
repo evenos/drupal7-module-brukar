@@ -7,16 +7,75 @@ function brukar_server_menu() {
 	return array(
     'admin/structure/brukar' => array(
       'title' => 'Brukar',
+      'page callback' => 'brukar_server_admin_overview',
+      'access arguments' => array('brukar admin'),
+      'type' => MENU_NORMAL_ITEM, //MENU_LOCAL_TASK,
+      'file' => 'brukar_server.admin.php',
+    ),
+    'admin/structure/brukar/overview' => array(
+      'title' => 'Overview',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'weight' => -20,
+    ),
+    'admin/structure/brukar/application' => array(
+      'title' => 'Applications',
       'page callback' => 'brukar_server_admin_applications',
       'access arguments' => array('brukar admin'),
       'type' => MENU_LOCAL_TASK,
       'file' => 'brukar_server.admin.php',
+      'weight' => 10,
     ),
-    'admin/structure/brukar/application' => array(
-      'title' => 'Applikasjoner',
-      'type' => MENU_DEFAULT_LOCAL_TASK,
+	  'admin/structure/brukar/application/add' => array(
+      'title' => 'Add application',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('brukar_server_admin_applications_form'),
+      'access arguments' => array('brukar admin'),
+      'type' => MENU_LOCAL_ACTION,
+      'file' => 'brukar_server.admin.php',
     ),
-
+	  'admin/structure/brukar/application/%brukar_application' => array(
+      'title' => 'Applikasjon',
+      'title callback' => 'brukar_server_admin_applications_title',
+      'title arguments' => array(4),
+      'page callback' => 'brukar_server_admin_applications_view',
+      'page arguments' => array(4),
+      'access arguments' => array('brukar admin'),
+      'type' => MENU_CALLBACK,
+      'file' => 'brukar_server.admin.php',
+    ),
+	  'admin/structure/brukar/application/%brukar_application/edit' => array(
+	    'title' => 'Edit',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('brukar_server_admin_applications_form', 4),
+      'access arguments' => array('brukar admin'),
+      'type' => MENU_LOCAL_ACTION,
+      'file' => 'brukar_server.admin.php',
+    ),
+    'admin/structure/brukar/application/%brukar_application/users' => array(
+      'title' => t('Users'),
+      'page callback' => 'brukar_server_admin_applications_users',
+      'page arguments' => array(4),
+      'access arguments' => array('brukar admin'),
+      'type' => MENU_LOCAL_ACTION,
+      'file' => 'brukar_server.admin.php',
+    ),
+    'admin/structure/brukar/application/%brukar_application/users/change/%brukar_access' => array(
+      'title' => t('Users'),
+      'page callback' => 'brukar_server_admin_applications_users_change',
+      'page arguments' => array(4, 7),
+      'access arguments' => array('brukar admin'),
+      'type' => MENU_CALLBACK,
+      'file' => 'brukar_server.admin.php',
+    ),
+    'admin/structure/brukar/application/%brukar_application/users/remove/%brukar_access' => array(
+      'title' => t('Users'),
+      'page callback' => 'brukar_server_admin_applications_users_remove',
+      'page arguments' => array(4, 7),
+      'access arguments' => array('brukar admin'),
+      'type' => MENU_CALLBACK,
+      'file' => 'brukar_server.admin.php',
+    ),
+	    
 	  'server/oauth/request_token' => array(
 	    'title' => 'OAuth Server: Request Token',
       'page callback' => 'brukar_server_oauth_request_token',
@@ -46,4 +105,30 @@ function brukar_server_menu() {
       'file' => 'brukar_server.oauth.php',
 	  ),
 	);
+}
+
+function brukar_application_load($id) {
+  // $app = cache_get('brukar_application:' . $id);
+  // if ($app === FALSE) {
+    $app = db_select('brukar_application', 'a')
+      ->condition('id', $id)
+      ->fields('a')
+      ->execute()
+      ->fetch();
+    // cache_set('brukar_application:' . $id, $app);
+  // }
+  return $app;
+}
+
+function brukar_access_load($id) {
+  // $app = cache_get('brukar_access:' . $id);
+  // if ($app === FALSE) {
+  $app = db_select('brukar_access', 'a')
+  ->condition('id', $id)
+  ->fields('a')
+  ->execute()
+  ->fetch();
+  // cache_set('brukar_access:' . $id, $app);
+  // }
+  return $app;
 }

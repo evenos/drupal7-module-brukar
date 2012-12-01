@@ -83,7 +83,8 @@ class BrukarServerDataStore extends OAuthDataStore {
   	  'callback' => $callback,
   	  'created' => time(),
   	);
-  	drupal_write_record('brukar_token', $record);
+  	db_insert('brukar_token')->fields($record)->execute();
+  	// drupal_write_record('brukar_token', $record);
   	return $token;
   }
 
@@ -93,7 +94,7 @@ class BrukarServerDataStore extends OAuthDataStore {
     $aTokenD = db_query('SELECT * FROM {brukar_token} WHERE `type` = :type AND uid = :uid AND application_id = :aid', array(':uid' => $token->uid, ':aid' => $consumer->id, ':type' => 'access'))->fetch();
 
     if ($aTokenD === false) {
-	  	$aToken = new BrukarServerToken(auth_uuid(), auth_uuid());
+	  	$aToken = new BrukarServerToken(brukar_common_uuid(), brukar_common_uuid());
 	  	$record = array(
 	  	  'application_id' => $consumer->id,
 	  	  'uid' => $token->uid,
@@ -102,7 +103,8 @@ class BrukarServerDataStore extends OAuthDataStore {
 	  	  'token_secret' => $aToken->secret,
 	  	  'created' => time(),
 	  	);
-	  	drupal_write_record('brukar_token', $record);
+	  	db_insert('brukar_token')->fields($record)->execute();
+	  	// drupal_write_record('brukar_token', $record);
     } else {
       $aToken = new BrukarServerToken($aTokenD->token_key, $aTokenD->token_secret, $aTokenD->id, $aTokenD->uid);
     }
