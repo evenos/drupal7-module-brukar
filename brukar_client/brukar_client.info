@@ -2,7 +2,7 @@ name = Brukar Client
 description = Integrasjon mot brukar-server.
 core = 7.x
 package = Brukar
-version = 0.4
+version = 7.x-0.4
 configure = admin/config/people/brukar
 
 dependencies[] = brukar_common
