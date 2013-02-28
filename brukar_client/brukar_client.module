@@ -127,8 +127,7 @@ function brukar_client_user_page_access() {
  */
 function brukar_client_user_view_alter(&$build) {
   global $user;
-
-  if (!isset($user->data['brukar']))
+  if ($build['#account']->uid == $user->uid && !isset($user->data['brukar']))
     $build['brukar'] = drupal_get_form('brukar_client_form_login');
 }
 
