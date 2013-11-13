@@ -156,7 +156,7 @@ function brukar_client_form_login_submit($form, &$form_state) {
 function brukar_client_user_load($users) {
   foreach ($users as $uid => $user) {
     if (isset($user->data['brukar'])) {
-      $user->cellphone = isset($user->data['brukar']['cellphone']) ? $user->data['brukar']['cellphone'] : $user->data['brukar']['phone'];
+      $user->cellphone = isset($user->data['brukar']['cellphone']) ? $user->data['brukar']['cellphone'] : (isset($user->data['brukar']['phone']) ? $user->data['brukar']['phone'] : "");
       $user->organization = $user->data['brukar']['organization'];
       $user->homepage = $user->data['brukar']['homepage'];
     }
