@@ -46,7 +46,9 @@ function brukar_client_oauth_callback() {
     unset($_SESSION["auth_oauth"]);
 
     if (count($token) > 0) {
+      $_SESSION['_brukar_access_token'] = array('token' => $token["oauth_token"], 'token_secret' => $token["oauth_token_secret"]); 
       $token = new OAuthToken($token["oauth_token"], $token["oauth_token_secret"]);
+
       $req = OAuthRequest::from_consumer_and_token($consumer, $token, "GET", variable_get('brukar_url') . 'server/oauth/user', array());
       $req->sign_request($method, $consumer, $token);
 
