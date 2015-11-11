@@ -80,14 +80,14 @@ function brukar_client_login($data) {
       drupal_goto('user');
   }
 
-  $user = db_query('SELECT uid FROM {authmap} WHERE module = :module AND authname = :ident', array(':ident' => $data['id'], ':module' => 'brukar'))->fetch();
+  $authmap_user = db_query('SELECT uid FROM {authmap} WHERE module = :module AND authname = :ident', array(':ident' => $data['id'], ':module' => 'brukar'))->fetch();
   if ($user === FALSE) {
     $provided = module_invoke_all('brukar_client_user', $edit);
     $user = !empty($provided) ? $provided[0] : user_save(NULL, $edit);
     user_set_authmaps($user, array('authname_brukar' => $data['id']));
   }
   else {
-    $user = user_save(user_load($user->uid), $edit);
+    $user = user_save(user_load($authmap_user->uid), $edit);
   }
 
   $form_state = (array) $user;
