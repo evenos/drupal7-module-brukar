@@ -21,9 +21,18 @@ function brukar_client_oauth_request() {
 
   if (count($token) > 0) {
     $_SESSION['auth_oauth'] = $token;
-    drupal_goto(variable_get('brukar_url') . 'server/oauth/authorize?oauth_token=' . $token["oauth_token"]);
+    drupal_goto(variable_get('brukar_url') . 'server/oauth/authorize?oauth_token=' . $token['oauth_token']);
   }
   else {
+    $debug_data = array(
+        'request_uri' => request_uri(),
+        'auth_oauth' =>  isset($_SESSION['auth_oauth']) ? $_SESSION['auth_oauth'] : 'no auth_oauth');
+    watchdog(
+        'brukar_client',
+        'Unable to retrieve token for login.<br/>Debug data:<br/><pre>!debug_data</pre><br/>',
+        array('!debug_data' =>  print_r($debug_data, TRUE) ),
+        WATCHDOG_ERROR);
+
     drupal_set_message(t('Unable to retrieve token for login.'), 'warning');
     drupal_goto('<front>');
   }
@@ -37,24 +46,34 @@ function brukar_client_oauth_callback() {
 
   if (isset($_SESSION['auth_oauth']) && $_SESSION['auth_oauth']['oauth_token'] == $_GET['oauth_token']) {
     unset($_GET['oauth_token']);
-    $tmp = new OAuthToken($_SESSION["auth_oauth"]["oauth_token"], $_SESSION['auth_oauth']['oauth_token_secret']);
+    $tmp = new OAuthToken($_SESSION['auth_oauth']['oauth_token'], $_SESSION['auth_oauth']['oauth_token_secret']);
 
-    $req = OAuthRequest::from_consumer_and_token($consumer, $tmp, "GET", variable_get('brukar_url') . 'server/oauth/access_token', array());
+    $req = OAuthRequest::from_consumer_and_token($consumer, $tmp, 'GET', variable_get('brukar_url') . 'server/oauth/access_token', array());
     $req->sign_request($method, $consumer, $tmp);
     parse_str(trim(file_get_contents($req->to_url())), $token);
 
-    unset($_SESSION["auth_oauth"]);
+    unset($_SESSION['auth_oauth']);
 
     if (count($token) > 0) {
-      $_SESSION['_brukar_access_token'] = array('token' => $token["oauth_token"], 'token_secret' => $token["oauth_token_secret"]); 
-      $token = new OAuthToken($token["oauth_token"], $token["oauth_token_secret"]);
+      $_SESSION['_brukar_access_token'] = array('token' => $token['oauth_token'], 'token_secret' => $token['oauth_token_secret']);
+      $token = new OAuthToken($token['oauth_token'], $token['oauth_token_secret']);
 
-      $req = OAuthRequest::from_consumer_and_token($consumer, $token, "GET", variable_get('brukar_url') . 'server/oauth/user', array());
+      $req = OAuthRequest::from_consumer_and_token($consumer, $token, 'GET', variable_get('brukar_url') . 'server/oauth/user', array());
       $req->sign_request($method, $consumer, $token);
 
       brukar_client_login((array) json_decode(trim(file_get_contents($req->to_url()))));
     }
   }
+
+  $debug_data = array(
+      'cookie' => $_COOKIE,
+      'request_uri' => request_uri(),
+      'auth_oauth' =>  isset($_SESSION['auth_oauth']) ? $_SESSION['auth_oauth'] : 'no auth_oauth');
+  watchdog(
+      'brukar_client',
+      'User login failed.<br/>Debug data:<br/><pre>!debug_data</pre><br/>',
+      array('!debug_data' =>  print_r($debug_data, TRUE) ),
+      WATCHDOG_ERROR);
 
   drupal_set_message(t('Noe gikk feil under innlogging.'), 'warning');
   drupal_goto('<front>');
