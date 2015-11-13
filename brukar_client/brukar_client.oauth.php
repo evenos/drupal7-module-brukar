@@ -24,6 +24,15 @@ function brukar_client_oauth_request() {
     drupal_goto(variable_get('brukar_url') . 'server/oauth/authorize?oauth_token=' . $token['oauth_token']);
   }
   else {
+    $debug_data = array(
+        'request_uri' => request_uri(),
+        'auth_oauth' =>  isset($_SESSION['auth_oauth']) ? $_SESSION['auth_oauth'] : 'no auth_oauth');
+    watchdog(
+        'brukar_client',
+        'Unable to retrieve token for login.<br/>Debug data:<br/><pre>!debug_data</pre><br/>',
+        array('!debug_data' =>  print_r($debug_data, TRUE) ),
+        WATCHDOG_ERROR);
+
     drupal_set_message(t('Unable to retrieve token for login.'), 'warning');
     drupal_goto('<front>');
   }
@@ -55,6 +64,16 @@ function brukar_client_oauth_callback() {
       brukar_client_login((array) json_decode(trim(file_get_contents($req->to_url()))));
     }
   }
+
+  $debug_data = array(
+      'cookie' => $_COOKIE,
+      'request_uri' => request_uri(),
+      'auth_oauth' =>  isset($_SESSION['auth_oauth']) ? $_SESSION['auth_oauth'] : 'no auth_oauth');
+  watchdog(
+      'brukar_client',
+      'User login failed.<br/>Debug data:<br/><pre>!debug_data</pre><br/>',
+      array('!debug_data' =>  print_r($debug_data, TRUE) ),
+      WATCHDOG_ERROR);
 
   drupal_set_message(t('Noe gikk feil under innlogging.'), 'warning');
   drupal_goto('<front>');
